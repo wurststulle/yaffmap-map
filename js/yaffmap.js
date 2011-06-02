@@ -5,6 +5,7 @@ var f;
 var url = "/soap.php";
 var node;
 var debug;
+var styleGreen;
 
 function yaffmap(response, target, isDebug) {
   var zoom = 16;
@@ -30,15 +31,13 @@ function yaffmap(response, target, isDebug) {
                            });
                            linksLayer = new OpenLayers.Layer.Vector('rpLinks',{
                              styleMap: new OpenLayers.StyleMap({
-                               strokeColor : '#ee0016',
-                               strokeWidth : 1.0,
+                               strokeColor : '${color}',
+                               strokeWidth : '${width}',
                                strokeOpacity : 1,
-                               fillColor : '#ee0011',
+                               fillColor : '${color}',
                                fillOpacity : 0.5
                              })
                            });
-
-
 
                            map.addLayers([osm, linksLayer, nodesLayer]);
 
@@ -128,7 +127,8 @@ function cbNodes(r, soapResponse)
   for(var i = 0; i < node.length; i++){
     var feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(
       node[i].childNodes[2].textContent,
-      node[i].childNodes[1].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+      node[i].childNodes[1].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")),
+      { style: styleGreen });
       feature.attributes.id = node[i].childNodes[0].textContent
       feature.name = 'node';
       nodesLayer.addFeatures(feature);
@@ -158,12 +158,22 @@ function cbLinks(r, soapResponse)
                                                                new OpenLayers.Geometry.Point(
                                                                  link[i].childNodes[10].textContent,
                                                                  link[i].childNodes[9].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")),
-                                                                 this.cost = link[i].childNodes[0].textContent,
     ]);
     var feature = new OpenLayers.Feature.Vector(aLineStringGeometry, null);
-    feature.attributes = link[1];
-    feature.name = 'link';
-    linksLayer.addFeatures(feature);
+
+    feature.attributes.cost = link[i].childNodes[0].textContent;
+    if (parseFloat(feature.attributes.cost) > 1) 
+      {
+        feature.attributes.color = '#22ee22';
+        feature.attributes.width = '2';
+      }
+      else
+        {
+          feature.attributes.color = '#ff1111';
+          feature.attributes.width = '1';
+        }
+        feature.name = 'link';
+        linksLayer.addFeatures(feature);
   }
 }
 // debug function to show a node attribues
