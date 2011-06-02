@@ -4,6 +4,7 @@ var nodesLayer, linksLayer;
 var f;
 var url = "/soap.php";
 var node;
+var debug;
 
 function yaffmap(response, target, isDebug) {
   var zoom = 16;
@@ -97,18 +98,19 @@ function cbNode(r, soapResponse)
     data = soapResponse.xml;
   else
     data = new XMLSerializer().serializeToString(soapResponse);
+
   var rv = soap.getElementsByTagName("returnValue")[0].childNodes;
   var content = "";
   ret = rv;
   for (var i = 0; i < rv.length; ++i)
   {
-    var node = rv[i];
+    node = rv[i];
     content += node.nodeName.split(":")[1] + ": " + node.textContent + "<br />";
   }
 
 
 
-  setPaneContent(soapResponse.getElementsByTagName("hostname")[0].textContent, content);
+  setPaneContent(rv[7].textContent, content);
 }
 
 function cbNodes(r, soapResponse)
@@ -125,9 +127,9 @@ function cbNodes(r, soapResponse)
   node = rv;
   for(var i = 0; i < node.length; i++){
     var feature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(
-      node[i].getElementsByTagName("longitude")[0].textContent,
-      node[i].getElementsByTagName("latitude")[0].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
-      feature.attributes.id = node[i].getElementsByTagName("id")[0].textContent
+      node[i].childNodes[2].textContent,
+      node[i].childNodes[1].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")));
+      feature.attributes.id = node[i].childNodes[0].textContent
       feature.name = 'node';
       nodesLayer.addFeatures(feature);
   }
@@ -147,16 +149,16 @@ function cbLinks(r, soapResponse)
   var rv = soap.getElementsByTagName("returnValue")[0].childNodes;
   var content = "";
   link = rv;
-
+  debug = link;
   for(var i = 0; i < link.length; i++) {
     aLineStringGeometry = new OpenLayers.Geometry.LineString([
                                                              new OpenLayers.Geometry.Point(
-                                                               link[i].getElementsByTagName("sourceLon")[0].textContent,
-                                                               link[i].getElementsByTagName("sourceLat")[0].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 
+                                                               link[i].childNodes[7].textContent,
+                                                               link[i].childNodes[6].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")), 
                                                                new OpenLayers.Geometry.Point(
-                                                                 link[i].getElementsByTagName("destLon")[0].textContent,
-                                                                 link[i].getElementsByTagName("destLat")[0].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")),
-                                                                 this.cost = link[i].getElementsByTagName("cost")[0].textContent,
+                                                                 link[i].childNodes[10].textContent,
+                                                                 link[i].childNodes[9].textContent).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913")),
+                                                                 this.cost = link[i].childNodes[0].textContent,
     ]);
     var feature = new OpenLayers.Feature.Vector(aLineStringGeometry, null);
     feature.attributes = link[1];
