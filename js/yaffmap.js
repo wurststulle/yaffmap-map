@@ -9,7 +9,6 @@ var styleGreen;
 
 function yaffmap(response, target, isDebug) {
   var zoom = 16;
-
   map = new OpenLayers.Map('yaffmap', 
                            { maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
                              numZoomLevels: 19,
@@ -44,21 +43,18 @@ function yaffmap(response, target, isDebug) {
                            selectControl = new OpenLayers.Control.SelectFeature([nodesLayer, linksLayer], { title: "Nodes + Links", select: onSelect });
                            map.addControl(selectControl);
                            selectControl.activate();
-                           var lonLat = new OpenLayers.LonLat(13.483937263488770,52.562709808349609).transform(map.displayProjection,map.projection);
-
-                           map.setCenter(lonLat, zoom);
                            if (navigator.geolocation) {
                              navigator.geolocation.getCurrentPosition(function (position) {
                                lat = position.coords.latitude;
                                lon =  position.coords.longitude;
-                               zoom = 13;
-                               lonLat = new OpenLayers.LonLat(lon, lat).transform(map.displayProjection,  map.projection);
-                               map.setCenter (lonLat, zoom); 
-
+                               var lonLat = new OpenLayers.LonLat(lon, lat).transform(map.displayProjection,  map.projection);
+                               map.setCenter(lonLat, zoom);
                              });
+                           }else{
+                        	   var lonLat = new OpenLayers.LonLat(13.483937263488770,52.562709808349609).transform(map.displayProjection,map.projection);
+                        	   map.setCenter(lonLat, zoom);
                            }
-
-
+                           
 }
 
 
