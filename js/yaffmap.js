@@ -2,7 +2,7 @@ var map;
 var selectControl;
 var nodesLayer, linksLayer;
 var f;
-var url = "/soap.php";
+var url = "../../soap.php";
 var node;
 var debug;
 var styleGreen;
