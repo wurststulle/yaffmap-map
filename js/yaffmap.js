@@ -1,5 +1,6 @@
 var map;
 var selectControl;
+var selectedNode;
 var nodesLayer, linksLayer;
 var f;
 var url = "../../soap.php";
@@ -21,12 +22,14 @@ function yaffmap(response, target, isDebug) {
                            var osm = new OpenLayers.Layer.OSM();
                            nodesLayer = new OpenLayers.Layer.Vector("Nodes", {
                              styleMap: new OpenLayers.StyleMap({
-                               strokeColor : '#33EE66',
-                               strokeWidth : 1.0,
+                               strokeColor : '${borderColor}',
+                               strokeWidth : '${width}',
+                               graphicZIndex: "${zIndex}",
                                pointRadius: "5px",
-                               fillColor: "#11CC44",
+                               fillColor: "${color}",
                                fillOpacity : 0.70
-                             })
+                             }),
+                             rendererOptions: {zIndexing: true}
                            });
                            linksLayer = new OpenLayers.Layer.Vector('rpLinks',{
                              styleMap: new OpenLayers.StyleMap({
@@ -60,7 +63,14 @@ function yaffmap(response, target, isDebug) {
 
 function onSelect(feature) {
   f = feature;
+  onNodePopupClose();
   if (feature.name == 'node') {
+      feature.attributes.color = '#ee1111';
+      feature.attributes.borderColor = '#cc3333';
+      feature.attributes.width = '3';
+      feature.attributes.zIndex = '3000'
+    nodesLayer.redraw();
+    selectedNode = feature;  
     var pl = new SOAPClientParameters();
     pl.add("id", feature.attributes.id);
     SOAPClient.invoke(url, "getFfNode", pl, true, cbNode); 
@@ -103,10 +113,10 @@ function cbNode(r, soapResponse)
     content += node.nodeName.split(":")[1] + ": " + node.textContent + "<br />";
   }
 
+  
 
-
-  setPaneContent(rv[7].textContent, content);
-}
+  setPaneContent(rv[7].textContent, "<i>" + rv[0].textContent + "</i>" + rv[3].textContent + "<br /> <br /> seit " + rv[18].textContent);
+} 
 
 function cbNodes(r, soapResponse)
 {
@@ -127,6 +137,11 @@ function cbNodes(r, soapResponse)
       { style: styleGreen });
       feature.attributes.id = node[i].childNodes[0].textContent
       feature.name = 'node';
+      feature.hostname = node[i].childNodes[7].textContent;
+      feature.ip = node[i].childNodes[10].textContent;
+      feature.attributes.color = '#11CC44';
+      feature.attributes.borderColor = '#33EE66';
+      feature.attributes.width = '1';
       nodesLayer.addFeatures(feature);
   }
 
@@ -203,9 +218,56 @@ function array2json(arr) {
 }
 
 function onNodePopupClose() {
-  nodesControl.unselect(selectedNode);
+  if (selectedNode)
+    {
+    feature = selectedNode;
+      feature.attributes.color = '#11CC44';
+      feature.attributes.borderColor = '#33EE66';
+      feature.attributes.width = '1'; 
+      feature.attributes.zIndex = '2000'
+    }
+  nodesLayer.redraw();
 }
 
 function onLinkPopupClose() {
   linksControl.unselect(selectedLink);
 }
+
+var last_j = 0;
+var last_search = "";
+
+function yaffmapSearch() {
+  var str = document.search.searchContent.value;
+  var j;
+  if (last_search == str) {
+    j = last_j + 1;
+  } else {
+    j = 0;
+  }
+  last_search = str;
+
+  var found = false;
+  for(var i = j; i < nodesLayer.features.length; i++){
+    var cnode = nodesLayer.features[i];
+    if ((cnode.hostname.indexOf(str) != -1 || cnode.ip.indexOf(str) != -1)) { //or (cnode.ip.indexOf(str) != -1) {
+      var latlon = new OpenLayers.LonLat(cnode.geometry.x, cnode.geometry.y);
+      onSelect(cnode);
+      last_j = i;
+      found = true;
+      map.setCenter(latlon, 16);
+      break;
+    }
+  }
+  if (found == false)
+    last_j = 0;
+}
+
+window.captureEvents(Event.KEYPRESS);
+window.onkeypress = keyPressed;
+
+function keyPressed(e) {
+  if (e.which == 13) {
+    yaffmapSearch();
+  }
+}
+
