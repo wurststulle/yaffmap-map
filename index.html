@@ -28,7 +28,10 @@ function setPaneContent(title, content) {
 </head>
 <body>
   <div id="yaffmapSearch" class="yaffmapSearch"> 
-    <form onSubmit="return false;" name="search"> <input id='searchContent' type="text" /> <input type="button" value="Suchen" onClick="yaffmapSearch()"/></form>
+    <ul class="list">
+      <li class="item"><form onSubmit="return false;" name="search"> <input id='searchContent' type="text" /> <input type="button" value="Suchen" onClick="yaffmapSearch()"/></form> </li>
+      <li class="item"><div id="panel"> </div></li>
+    </ul>
   </div>
   <div id="yaffmapPane" class="yaffmapPane">
     <div id="yaffmapPaneTitle" class="yaffmapPaneTitle"> </div>

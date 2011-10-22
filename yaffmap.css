@@ -23,10 +23,23 @@
   position: absolute;
   #top: 10px;
   right: 20%;
-  min-height: 25px;
+  height: 25px;
   width: 60%;
   background: #eee;
   z-index: 2000;
+}
+
+.list
+{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item
+{
+  float: left;
+  margin: 0 0.15em;
 }
 
 .yaffmapPaneClose {
@@ -59,4 +72,64 @@
   word-wrap:break-word;
   overflow: auto;
   height: 90%;
+}
+
+.olControlDrawFeaturePathItemActive {
+  background:url(gtk-edit.svg) no-repeat;
+            background-color:#0e0;
+  float:left;
+  height:15px;
+  margin: 2px;
+  padding: 4px;
+  width:15px;
+}
+
+.olControlNodeItemActive {
+  background:url(internet-radio-new.svg) no-repeat;
+            background-color:#0e0;
+  float:left;
+  height:15px;
+  margin: 2px;
+  padding: 4px;
+  width:15px;
+          }
+
+          .olControlNodeItemInactive {
+            background:url(internet-radio-new.svg) no-repeat;
+            float:left;
+            height:15px;
+            margin: 2px;
+            padding: 4px;
+            width:15px;
+          }
+
+          .olControlDrawFeaturePathItemInactive {
+            background:url(gtk-edit.svg) no-repeat;
+            float:left;
+            height:15px;
+            margin: 2px;
+            padding: 4px;
+            width:15px;
+}
+
+.olControlZoomInItemInactive {
+  background:url(zoom-in.svg) no-repeat;
+  float:left;
+  height:20px;
+  margin: 2px;
+  padding: 4px;
+  width:20px;
+}
+.olControlZoomOutItemInactive {
+  background:url(zoom-out.svg) no-repeat;
+  float:left;
+  height:20px;
+  margin: 2px;
+  padding: 4px;
+  width:20px;
+}
+
+#panel {
+  height: 25px;
+  border: 0px;
 }
