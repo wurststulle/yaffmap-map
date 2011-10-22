@@ -294,16 +294,9 @@ function keyPressed(e) {
 
 
 function onClickMeasure(event) {
-  if (lengthPopup)
-    lengthPopup.hide();
   var units = event.units;
   var measure = event.measure;
-  lengthPopup = new OpenLayers.Popup.FramedCloud("featurePopup",
-                                                 event.geometry.getBounds().getCenterLonLat(),
-                                                 new OpenLayers.Size(120,100),
-                                                 "<b>Laenge</b><br />"+measure.toFixed(3) + units,
-                                                 null, true, null);
-                                                 map.addPopup(lengthPopup);
+  setPaneContent("Entfernung", measure.toFixed(3) + units + "<br /> <br /><i> Doppelklick f&uuml;r eine neue Messung</i>");
 }
 
 
