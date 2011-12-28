@@ -49,16 +49,29 @@ function yaffmap(response, target, isDebug) {
                            map.addLayers([osm, linksLayer, nodesLayer]);
 
                            if (navigator.geolocation) {
-                             navigator.geolocation.getCurrentPosition(function (position) {
-                               lat = position.coords.latitude;
-                               lon =  position.coords.longitude;
-                               var lonLat = new OpenLayers.LonLat(lon, lat).transform(map.displayProjection,  map.projection);
-                               map.setCenter(lonLat, zoom);
-                             });
-                           }else{
-                             var lonLat = new OpenLayers.LonLat(13.483937263488770,52.562709808349609).transform(map.displayProjection,map.projection);
-                             map.setCenter(lonLat, zoom);
-                           }
+							 try {
+								 navigator.geolocation.getCurrentPosition(function (pos) {
+										lat = position.coords.latitude;
+										lon =  position.coords.longitude;
+										moveToBrowserLocation(map, zoom, lon, lat);
+								 	},
+									
+									function (error) {
+								   		console.log("Move to default Location (c). GeoLocationErrorCode: " + error.code);
+										moveToDefaultLocation(map, zoom);
+								 	},
+									
+									{timeout: 1}
+								);
+							 } catch (err) {
+							   //console.log(err);
+							   console.log("Move to default Location (a)");
+							   moveToDefaultLocation(map, zoom);
+							 }
+						  }else{
+							   console.log("Move to default Location (b)");
+							   moveToDefaultLocation(map, zoom);
+							}
 
                            p = new OpenLayers.Control.Panel({div: document.getElementById('panel')});
                            m = new OpenLayers.Control.Measure(OpenLayers.Handler.Path, { displayClass: 'olControlDrawFeaturePath', geodesic: true, title: "Entfernung messen"});
@@ -77,6 +90,15 @@ function yaffmap(response, target, isDebug) {
 
 }
 
+function moveToDefaultLocation(map, zoom) {
+	var lonLat = new OpenLayers.LonLat(13.483937263488770,52.562709808349609).transform(map.displayProjection,map.projection);
+	map.setCenter(lonLat, zoom);
+}
+
+function moveToBrowserLocation(map, zoom, lon, lat) {
+	var lonLat = new OpenLayers.LonLat(lon, lat).transform(map.displayProjection,  map.projection);
+	map.setCenter(lonLat, zoom);
+}
 
 function onSelect(feature) {
   f = feature;
